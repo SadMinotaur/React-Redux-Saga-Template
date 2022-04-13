@@ -1,4 +1,3 @@
-/* eslint-disable global-require */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const webpack = require("webpack");
 const path = require("path");
@@ -9,7 +8,7 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const RobotstxtPlugin = require("robotstxt-webpack-plugin");
 const ReactRefreshTypeScript = require("react-refresh-typescript");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
-
+const Dotenv = require("dotenv-webpack");
 // enable this for analyze
 // const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
@@ -57,32 +56,36 @@ module.exports = {
         use: [
           {
             loader: require.resolve("ts-loader"),
-            // disable options (comment lines 61-69) when production
-            options: {
-              getCustomTransformers: () => ({
-                before: isDevelopment ? [ReactRefreshTypeScript()] : []
-              }),
-              // `ts-loader` does not work with HMR unless `transpileOnly` is used.
-              // If you need type checking, `ForkTsCheckerWebpackPlugin` is an alternative.
-              transpileOnly: isDevelopment
-            }
+            options: isDevelopment
+              ? {
+                  getCustomTransformers: () => ({
+                    before: isDevelopment ? [ReactRefreshTypeScript()] : []
+                  }),
+                  // `ts-loader` does not work with HMR unless `transpileOnly` is used.
+                  // If you need type checking, `ForkTsCheckerWebpackPlugin` is an alternative.
+                  transpileOnly: isDevelopment
+                }
+              : undefined
           }
         ],
         exclude: "/node_modules/"
       },
       {
         test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, { loader: "css-loader", options: { sourceMap: true } }]
+        use: [
+          MiniCssExtractPlugin.loader,
+          { loader: "css-loader", options: { sourceMap: isDevelopment } }
+        ]
       },
       {
         test: /\.s[ac]ss$/i,
         use: [
           MiniCssExtractPlugin.loader,
-          { loader: "css-loader", options: { sourceMap: true } },
+          { loader: "css-loader", options: { sourceMap: isDevelopment } },
           {
             loader: "sass-loader",
             options: {
-              sourceMap: true,
+              sourceMap: isDevelopment,
               implementation: require("sass"),
               prependData: `@import "./src/styles/variables.scss";`
             }
@@ -108,8 +111,7 @@ module.exports = {
     port: 3000,
     writeToDisk: true,
     historyApiFallback: true,
-    watchContentBase: true,
-    hotOnly: true
+    hot: true
   },
   output: {
     filename: "[name]-[contenthash].js",
@@ -118,8 +120,10 @@ module.exports = {
     publicPath: "/"
   },
   optimization: {
-    minimize: false,
+    minimize: !isDevelopment,
     usedExports: true,
+    sideEffects: true,
+    removeEmptyChunks: true,
     minimizer: [
       new TerserPlugin({
         test: /\.js(\?.*)?$/i,
@@ -127,7 +131,7 @@ module.exports = {
         extractComments: true
       }),
       new CssMinimizerPlugin({
-        sourceMap: true
+        sourceMap: isDevelopment
       })
     ],
     splitChunks: {
@@ -154,6 +158,7 @@ module.exports = {
     }
   },
   plugins: [
+    new Dotenv(),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, "public", "index.html")
       // favicon: "./assets/logo.ico"

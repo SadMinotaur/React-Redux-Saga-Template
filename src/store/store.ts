@@ -14,7 +14,6 @@ export type RootState = ReturnType<typeof reducers>;
 const persistedReducer = persistReducer(
   {
     key: "root",
-    blacklist: ["notification", "loading", "courses"],
     storage
   },
   reducers
