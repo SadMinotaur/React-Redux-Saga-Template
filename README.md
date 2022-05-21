@@ -7,10 +7,11 @@ Based on https://github.com/Revolt9k/react-redux-template.
 - React
 - Redux
 - Redux-Saga
-- Redux-Persist
 - TypeScript
 - Scss
 - Airbnb eslint setup and basic prettier config
+- Yarn PnP
+- Husky
 
 #### Webpack build includes:
 
@@ -18,3 +19,4 @@ Based on https://github.com/Revolt9k/react-redux-template.
 - Chunk splitting
 - Hot reload
 - Analyzing bundle size tool
+
