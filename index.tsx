@@ -1,6 +1,10 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import App from "./src/app";
 import "./src/styles/global.scss";
 
-ReactDOM.render(<App />, document.querySelector("#root"));
+const el = document.getElementById("root");
+if (el === null) throw new Error("Root container missing in index.html");
+
+const root = ReactDOM.createRoot(el);
+root.render(<App />);

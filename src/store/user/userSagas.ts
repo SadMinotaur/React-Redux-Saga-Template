@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { PayloadAction } from "@reduxjs/toolkit";
-import { call, put, takeLatest } from "redux-saga/effects";
-import sagaError from "@utils/sagaError";
+import { takeLatest } from "redux-saga/effects";
 import * as A from "./userActions";
 
 function* signInUser(payloadAction: PayloadAction<string>) {

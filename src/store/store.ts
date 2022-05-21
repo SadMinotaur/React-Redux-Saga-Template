@@ -1,27 +1,19 @@
-import { applyMiddleware, combineReducers, createStore } from "@reduxjs/toolkit";
-import { persistStore, persistReducer } from "redux-persist";
-import { composeWithDevTools } from "redux-devtools-extension";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware, { SagaMiddleware } from "redux-saga";
-import storage from "redux-persist/lib/storage";
-import user from "./user/userRedusers";
 import rootSaga from "./rootSaga";
+import user from "./user/userRedusers";
 
-const reducers = combineReducers({
+const isDevelopment = process.env.NODE_ENV !== "production";
+
+const reducer = combineReducers({
   user
 });
 
-export type RootState = ReturnType<typeof reducers>;
-const persistedReducer = persistReducer(
-  {
-    key: "root",
-    storage
-  },
-  reducers
-);
+export type RootState = ReturnType<typeof reducer>;
 const sagaMiddleware: SagaMiddleware = createSagaMiddleware();
-export const store = createStore(
-  persistedReducer,
-  composeWithDevTools(applyMiddleware(sagaMiddleware))
-);
-export const persistor = persistStore(store);
+export const store = configureStore({
+  reducer,
+  middleware: [sagaMiddleware],
+  devTools: isDevelopment
+});
 sagaMiddleware.run(rootSaga);

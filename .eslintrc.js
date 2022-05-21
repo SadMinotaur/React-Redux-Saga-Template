@@ -1,5 +1,6 @@
 module.exports = {
   extends: [
+    "airbnb",
     "airbnb-typescript",
     "airbnb/hooks",
     "plugin:@typescript-eslint/recommended",
@@ -27,20 +28,9 @@ module.exports = {
     createDefaultProgram: true
   },
   rules: {
-    "no-param-reassign": "warn",
-    "no-shadow": "warn",
-    "@typescript-eslint/no-shadow": "warn",
     "import/prefer-default-export": "warn",
-    "react/prop-types": "off",
     "react/jsx-filename-extension": "warn",
-    "react/react-in-jsx-scope": "warn",
     "react/jsx-props-no-spreading": "warn",
-    "jsx-a11y/no-static-element-interactions": "off",
-    "jsx-a11y/click-events-have-key-events": "off",
-    "jsx-a11y/label-has-associated-control": "off",
-    "react/jsx-props-no-spreading": "warn",
-    "@typescript-eslint/naming-convention": "warn",
-    "react-hooks/exhaustive-deps": "warn",
     "global-require": "warn"
   }
 };

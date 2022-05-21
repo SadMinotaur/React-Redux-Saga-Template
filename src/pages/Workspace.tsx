@@ -1,7 +1,5 @@
-import React, { FC } from "react";
+import React from "react";
 
-const Workspace: FC = () => {
-  return <div />;
-};
-
-export default Workspace;
+export default function Workspace(): React.ReactElement {
+  return <div>test</div>;
+}

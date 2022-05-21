@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const webpack = require("webpack");
 const path = require("path");
+
+const PnpWebpackPlugin = require(`pnp-webpack-plugin`);
+const ReactRefreshTypeScript = require("react-refresh-typescript");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const RobotstxtPlugin = require("robotstxt-webpack-plugin");
-const ReactRefreshTypeScript = require("react-refresh-typescript");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const Dotenv = require("dotenv-webpack");
 // enable this for analyze
@@ -27,7 +29,11 @@ module.exports = {
       "@utils": path.resolve(__dirname, "src/utils/"),
       "@assets": path.resolve(__dirname, "assets/")
     },
-    extensions: [".ts", ".tsx", ".js"]
+    extensions: [".ts", ".tsx", ".js"],
+    plugins: [PnpWebpackPlugin]
+  },
+  resolveLoader: {
+    plugins: [PnpWebpackPlugin.moduleLoader(module)]
   },
   module: {
     rules: [
@@ -45,60 +51,34 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        use: [
-          {
-            loader: "url-loader"
-          }
-        ]
+        use: ["url-loader"]
       },
       {
         test: /\.tsx?$/,
-        use: [
-          {
-            loader: require.resolve("ts-loader"),
-            options: isDevelopment
-              ? {
-                  getCustomTransformers: () => ({
-                    before: isDevelopment ? [ReactRefreshTypeScript()] : []
-                  }),
-                  // `ts-loader` does not work with HMR unless `transpileOnly` is used.
-                  // If you need type checking, `ForkTsCheckerWebpackPlugin` is an alternative.
-                  transpileOnly: isDevelopment
-                }
-              : undefined
-          }
-        ],
-        exclude: "/node_modules/"
+        loader: "ts-loader",
+        exclude: /node_modules/,
+        options: {
+          getCustomTransformers: () => ({
+            before: [ReactRefreshTypeScript()]
+          })
+        }
       },
       {
-        test: /\.css$/i,
+        test: /.s?css$/,
         use: [
-          MiniCssExtractPlugin.loader,
-          { loader: "css-loader", options: { sourceMap: isDevelopment } }
-        ]
-      },
-      {
-        test: /\.s[ac]ss$/i,
-        use: [
-          MiniCssExtractPlugin.loader,
-          { loader: "css-loader", options: { sourceMap: isDevelopment } },
+          isDevelopment ? "style-loader" : MiniCssExtractPlugin.loader,
+          "css-loader",
           {
             loader: "sass-loader",
             options: {
-              sourceMap: isDevelopment,
-              implementation: require("sass"),
-              prependData: `@import "./src/styles/variables.scss";`
+              additionalData: `@import "./src/styles/variables.scss";`
             }
           }
         ]
       },
       {
         test: /\.(png|jpe?g|gif)$/i,
-        use: [
-          {
-            loader: "file-loader"
-          }
-        ]
+        use: ["file-loader"]
       },
       {
         test: /\.(webp)$/i,
@@ -107,9 +87,7 @@ module.exports = {
     ]
   },
   devServer: {
-    contentBase: "./public",
     port: 3000,
-    writeToDisk: true,
     historyApiFallback: true,
     hot: true
   },
@@ -130,9 +108,7 @@ module.exports = {
         parallel: true,
         extractComments: true
       }),
-      new CssMinimizerPlugin({
-        sourceMap: isDevelopment
-      })
+      new CssMinimizerPlugin({ parallel: true })
     ],
     splitChunks: {
       chunks: "async",
@@ -181,7 +157,6 @@ module.exports = {
     new webpack.ProvidePlugin({
       process: "process/browser"
     }),
-    isDevelopment && new webpack.HotModuleReplacementPlugin(),
     isDevelopment && new ReactRefreshWebpackPlugin()
     // enable this for analyze
     // new BundleAnalyzerPlugin(),

@@ -1,5 +1,5 @@
-import React, { FC } from "react";
+import React from "react";
 
-const Suspence: FC = () => <div />;
-
-export default Suspence;
+export default function Suspence(): JSX.Element {
+  return <div />;
+}
