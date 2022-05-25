@@ -59,7 +59,7 @@ module.exports = {
         exclude: /node_modules/,
         options: {
           getCustomTransformers: () => ({
-            before: [ReactRefreshTypeScript()]
+            before: isDevelopment ? [ReactRefreshTypeScript()] : []
           })
         }
       },
@@ -89,7 +89,7 @@ module.exports = {
   devServer: {
     port: 3000,
     historyApiFallback: true,
-    hot: true
+    hot: isDevelopment
   },
   output: {
     filename: "[name]-[contenthash].js",
